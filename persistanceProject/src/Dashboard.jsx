@@ -1,25 +1,29 @@
-import React, { useEffect } from "react";
+import supabase from "./supabase-client";
+import { useEffect, useState } from "react";
 
-import supabase from "./supabase-client.js";
 function Dashboard() {
+  const [metrics, setMetrics] = useState([]);
+
   useEffect(() => {
-    async function fetchMetrics() {
-      const response = await supabase
-        .from("sales_deals")
-        .select(
-          `
-        name,
-        value
-        `,
-        )
-        .order("value", { ascending: false })
-        .limit(1);
-
-      console.log(response.data);
-    }
-
     fetchMetrics();
   }, []);
+
+  async function fetchMetrics() {
+    try {
+      const { data, error } = await supabase.from("sales_deals").select(
+        `
+          name,
+          value.sum()
+          `,
+      );
+      if (error) {
+        throw error;
+      }
+      setMetrics(data);
+    } catch (error) {
+      console.error("Error fetching metrics:", error);
+    }
+  }
 
   return (
     <div className="dashboard-wrapper">
