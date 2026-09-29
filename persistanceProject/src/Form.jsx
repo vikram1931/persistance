@@ -1,17 +1,31 @@
 import { useActionState } from "react";
+import supabase from "./supabase-client";
+
+/**
+Challenge:
+* 1) Import the supabase client
+* 2) Write the client code to insert the 'newDeal' object into the table. Only 
+		 destructure 'error' and use .insert(), passing in our newDeal object
+* 3) Below this, use an if statement to check if there's an error back from 
+		 supabase. Log any error to the console and use the Error() constructor
+		 to return an error object with an appropriate message
+* 4) Save and use the form to add a new deal
+		 Hint: Check the supabase-js docs for "Insert Data"
+*/
 
 function Form({ metrics }) {
   const [error, submitAction, isPending] = useActionState(
     async (previousState, formData) => {
-      //Action logic
       const newDeal = {
         name: formData.get("name"),
         value: formData.get("value"),
       };
       console.log(newDeal);
-      //Async operation
-
-      //Return error state
+      const { error } = await supabase.from("sales_deals").insert(newDeal);
+      if (error) {
+        console.error("Error adding deal: ", error.message);
+        return new Error("Failed to add deal");
+      }
 
       return null;
     },
