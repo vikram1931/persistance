@@ -1,6 +1,7 @@
 import supabase from "./supabase-client";
 import { useEffect, useState } from "react";
 import { Chart } from "react-charts";
+import Form from "./Form";
 
 function Dashboard() {
   const [metrics, setMetrics] = useState([]);
@@ -18,12 +19,12 @@ function Dashboard() {
           table: "sales_deals",
         },
         (payload) => {
+          console.log(payload);
           fetchMetrics();
         },
       )
       .subscribe();
 
-    // Clean up subscription
     return () => {
       supabase.removeChannel(channel);
     };
@@ -84,8 +85,14 @@ function Dashboard() {
   ];
 
   return (
-    <div className="dashboard-wrapper">
-      <div className="chart-container">
+    <div
+      className="dashboard-wrapper"
+      role="region"
+      aria-label="Sales dashboard">
+      <div
+        className="chart-container"
+        role="region"
+        aria-label="Sales chart and data">
         <h2>Total Sales This Quarter ($)</h2>
         <div style={{ flex: 1 }}>
           <Chart
@@ -102,6 +109,7 @@ function Dashboard() {
           />
         </div>
       </div>
+      <Form metrics={metrics} />
     </div>
   );
 }
